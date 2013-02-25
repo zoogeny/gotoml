@@ -23,9 +23,10 @@ func TestStripLineComment(c *testing.T) {
 }
 
 func TestParseKeyValue(c *testing.T) {
-	var tomlMap TOMLMap
-	ParseKeyValue("stringkey = \"value\"", tomlMap)
-	if tomlMap["stringkey"] != "value" {
+	tomlMap := TOMLMap{"foo": "bar"}
+
+	ParseKeyValue("stringkey = \"string value\"", tomlMap)
+	if tomlMap["stringkey"] != "string value" {
 		c.Error("should parse string values")
 	}
 
@@ -51,9 +52,13 @@ func TestParseKeyValue(c *testing.T) {
 	}
 }
 
-func TestSimpleTOML(*testing.T) {
+func TestSimpleTOML(c *testing.T) {
 	out, err := OpenTOML("test-data/simple.toml")
 	if err != nil {
-		_ = out
+		c.Error("error parsing test-data/simple.toml")
+	}
+
+	if out["title"] != "Simple TOML" {
+		c.Error("expected title as Simple TOML")
 	}
 }

@@ -2,6 +2,7 @@ package gotoml
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"os"
 	"strings"
@@ -58,6 +59,24 @@ func StripLineComment(in string) string {
 }
 
 func ParseKeyValue(keyValue string, tomlMap TOMLMap) error {
+	index := strings.IndexRune(keyValue, '=')
+	if index == -1 {
+		return errors.New("Expect = in key value string")
+	}
+	key := strings.TrimSpace(keyValue[:index])
+	value := strings.TrimSpace(keyValue[index+1:])
+
+	switch {
+	case strings.HasPrefix(value, "\""):
+		end := len(value) - 1
+		tomlMap[key] = value[1:end]
+	case value == "true":
+		tomlMap[key] = true
+	case value == "false":
+		tomlMap[key] = false
+	}
+
+	//_,err := time.Parse(time.RFC3339, "1979-05-27T07:32:00Z")
 	return nil
 }
 
@@ -71,6 +90,7 @@ func OpenTOML(path string) (tomlMap TOMLMap, err error) {
 		line       string
 		currentMap TOMLMap
 	)
+	tomlMap = make(TOMLMap)
 	currentMap = tomlMap
 	if file, err = os.Open(path); err != nil {
 		return
@@ -90,6 +110,10 @@ func OpenTOML(path string) (tomlMap TOMLMap, err error) {
 		}
 
 		line, err = Readln(r)
+	}
+
+	if err == io.EOF {
+		err = nil
 	}
 
 	return
