@@ -62,3 +62,38 @@ func TestSimpleTOML(c *testing.T) {
 		c.Error("expected title as Simple TOML")
 	}
 }
+
+func TestExampleTOML(c *testing.T) {
+	out, err := OpenTOML("test-data/example.toml")
+	if err != nil {
+		c.Error("error parsing test-data/example.toml")
+	}
+
+	if out["title"] != "TOML Example" {
+		c.Error("expecting title as TOML Example")
+	}
+
+	if out["owner.name"] != "Tom Preston-Werner" {
+		c.Error("expecting owner.name as Tom Preston-Werner")
+	}
+
+	expectedDate := time.Date(1979, 5, 27, 7, 32, 0, 0, time.UTC)
+	if val, err := out.GetTime("owner.dob"); val != expectedDate || err != nil {
+		c.Error("should parse ISO8601 dates")
+	}
+
+	if out["servers.alpha.ip"] != "10.0.0.1" {
+		c.Error("should parse nested tags")
+	}
+}
+
+func TestExampleHardTOML(c *testing.T) {
+	out, err := OpenTOML("test-data/hard-example.toml")
+	if err != nil {
+		c.Error("error parsing test-data/hard-example.toml")
+	}
+
+	if out["the.test_string"] != "You'll hate me after this - #" {
+		c.Error("should handle # within strings")
+	}
+}

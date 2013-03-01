@@ -77,9 +77,10 @@ func ParseKeyValue(keyValue string, tomlMap TOMLMap) error {
 
 func OpenTOML(path string) (tomlMap TOMLMap, err error) {
 	var (
-		file   *os.File = nil
-		prefix string   = ""
-		line   string
+		file      *os.File = nil
+		prefix    string   = ""
+		lineCount int      = 0
+		line      string
 	)
 	tomlMap = make(TOMLMap)
 	if file, err = os.Open(path); err != nil {
@@ -90,12 +91,13 @@ func OpenTOML(path string) (tomlMap TOMLMap, err error) {
 	r := bufio.NewReader(file)
 	line, err = Readln(r)
 	for err == nil {
+		lineCount += 1
 		stripped := StripLineComment(line)
 		trimmed := strings.TrimSpace(stripped)
 		switch {
-		case trimmed[0] == '[':
+		case len(trimmed) > 0 && trimmed[0] == '[':
 			end := len(trimmed) - 1
-			prefix = strings.TrimSpace(trimmed[1:end-1]) + "."
+			prefix = strings.TrimSpace(trimmed[1:end]) + "."
 		case strings.ContainsAny(trimmed, "="):
 			err = ParseKeyValue(prefix+trimmed, tomlMap)
 		}

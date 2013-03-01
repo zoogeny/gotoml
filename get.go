@@ -1,7 +1,6 @@
 package gotoml
 
 import (
-	"errors"
 	"strconv"
 	"time"
 )
@@ -10,7 +9,7 @@ func (m TOMLMap) GetString(key string) (s string, e error) {
 	exists := false
 	s, exists = m[key]
 	if !exists {
-		e = errors.New("Attempt to get property that does not exist")
+		e = NewKeyNotFoundError(key, "string")
 		return
 	}
 	return
@@ -19,7 +18,7 @@ func (m TOMLMap) GetString(key string) (s string, e error) {
 func (m TOMLMap) GetBool(key string) (b bool, e error) {
 	str, exists := m[key]
 	if !exists {
-		e = errors.New("Attempt to get property that does not exist")
+		e = NewKeyNotFoundError(key, "bool")
 		return
 	}
 
@@ -29,7 +28,7 @@ func (m TOMLMap) GetBool(key string) (b bool, e error) {
 	case "false":
 		b = false
 	default:
-		e = errors.New("Invalid value for bool")
+		e = NewInvalidTypeError(key, str, "bool")
 	}
 	return
 }
@@ -37,7 +36,7 @@ func (m TOMLMap) GetBool(key string) (b bool, e error) {
 func (m TOMLMap) GetInt64(key string) (i int64, e error) {
 	str, exists := m[key]
 	if !exists {
-		e = errors.New("Attempt to get property that does not exist")
+		e = NewKeyNotFoundError(key, "int64")
 		return
 	}
 
@@ -48,7 +47,7 @@ func (m TOMLMap) GetInt64(key string) (i int64, e error) {
 func (m TOMLMap) GetFloat64(key string) (f float64, e error) {
 	str, exists := m[key]
 	if !exists {
-		e = errors.New("Attempt to get property that does not exist")
+		e = NewKeyNotFoundError(key, "float64")
 		return
 	}
 
@@ -59,7 +58,7 @@ func (m TOMLMap) GetFloat64(key string) (f float64, e error) {
 func (m TOMLMap) GetTime(key string) (t time.Time, e error) {
 	str, exists := m[key]
 	if !exists {
-		e = errors.New("Attempt to get property that does not exist")
+		e = NewKeyNotFoundError(key, "time")
 		return
 	}
 
