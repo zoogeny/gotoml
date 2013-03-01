@@ -26,28 +26,28 @@ func TestParseKeyValue(c *testing.T) {
 	tomlMap := TOMLMap{"foo": "bar"}
 
 	ParseKeyValue("stringkey = \"string value\"", tomlMap)
-	if tomlMap["stringkey"] != "string value" {
+	if val, err := tomlMap.GetString("stringkey"); val != "string value" || err != nil {
 		c.Error("should parse string values")
 	}
 
+	ParseKeyValue("boolkey = true", tomlMap)
+	if val, err := tomlMap.GetBool("boolkey"); val != true || err != nil {
+		c.Error("should parse bool values")
+	}
+
 	ParseKeyValue("intkey = 123456", tomlMap)
-	if tomlMap["intkey"] != 123456 {
+	if val, err := tomlMap.GetInt64("intkey"); val != 123456 || err != nil {
 		c.Error("should parse int values")
 	}
 
 	ParseKeyValue("floatkey = 12.34", tomlMap)
-	if tomlMap["floatkey"] != 12.34 {
+	if val, err := tomlMap.GetFloat64("floatkey"); val != 12.34 || err != nil {
 		c.Error("should parse float values")
-	}
-
-	ParseKeyValue("boolkey = true", tomlMap)
-	if tomlMap["boolkey"] != true {
-		c.Error("should parse bool values")
 	}
 
 	ParseKeyValue("datekey = 1979-05-27T07:32:00Z", tomlMap)
 	expectedDate := time.Date(1979, 5, 27, 7, 32, 0, 0, time.UTC)
-	if tomlMap["datekey"] != expectedDate {
+	if val, err := tomlMap.GetTime("datekey"); val != expectedDate || err != nil {
 		c.Error("should parse ISO8601 dates")
 	}
 }
